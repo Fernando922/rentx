@@ -1,6 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
-// import AppLoading from "expo-app-loading";
+import { ThemeProvider } from "styled-components";
 import {
   useFonts,
   Inter_400Regular,
@@ -11,9 +10,12 @@ import {
   Archivo_500Medium,
   Archivo_600SemiBold,
 } from "@expo-google-fonts/archivo";
+import Home from "./src/screens/Home";
+
+import theme from "./src/styles/theme";
 
 export default function App() {
-  let [fontsLoaded] = useFonts({
+  const [fontsLoaded] = useFonts({
     Inter_400Regular,
     Inter_500Medium,
     Archivo_400Regular,
@@ -22,18 +24,12 @@ export default function App() {
   });
 
   if (!fontsLoaded) {
-    // return <AppLoading />
     return null;
   }
+
   return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-      <Text style={{ fontFamily: "Inter_500Medium", fontSize: 40 }}>
-        Inter Black
-      </Text>
-      <Text style={{ fontSize: 40 }}>Inter Black</Text>
-      <Text style={{ fontFamily: "Archivo_600SemiBold", fontSize: 40 }}>
-        Inter Black
-      </Text>
-    </View>
+    <ThemeProvider theme={theme}>
+      <Home />
+    </ThemeProvider>
   );
 }
