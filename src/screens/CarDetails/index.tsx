@@ -3,13 +3,6 @@ import Acessory from "../../components/Acessory";
 import BackButton from "../../components/BackButton";
 import ImageSlider from "../../components/ImageSlider";
 
-import speedSvg from "../../assets/speed.svg";
-import accelerationSvg from "../../assets/acceleration.svg";
-import forceSvg from "../../assets/force.svg";
-import gasolineSvg from "../../assets/gasoline.svg";
-import exchangeSvg from "../../assets/exchange.svg";
-import peopleSvg from "../../assets/people.svg";
-
 import {
   Container,
   Header,
@@ -27,57 +20,70 @@ import {
   Footer,
 } from "./styles";
 import Button from "../../components/Button";
+import { useNavigation, useRoute } from "@react-navigation/native";
+
+import { CarDTO } from "../../dtos/CarDTO";
+import { getAccessoryIcon } from "../../utils/getAccessoryIcon";
+
+interface Params {
+  car: CarDTO;
+}
 
 const CarDetails = () => {
+  const { navigate, goBack } = useNavigation();
+
+  const { params } = useRoute();
+
+  const { car } = params as Params;
+
+  function handleConfirmRental() {
+    navigate("Scheduling");
+  }
+
+  function handleBack() {
+    goBack();
+  }
+
   return (
     <Container>
       <Header>
-        <BackButton onPress={() => {}} />
+        <BackButton onPress={handleBack} />
       </Header>
 
       <CarImages>
-        <ImageSlider
-          imagesUrl={[
-            "https://pngkit.com/png/full/237-2375888_porsche-panamera-s.png",
-          ]}
-        />
+        <ImageSlider imagesUrl={car.photos} />
       </CarImages>
 
       <Content>
         <Details>
           <Description>
-            <Brand>Lamborguini</Brand>
-            <Name>Huracan</Name>
+            <Brand>{car.brand}</Brand>
+            <Name>{car.name}</Name>
           </Description>
 
           <Rent>
-            <Period>Ao dia</Period>
-            <Price>R$ 500</Price>
+            <Period>{car.rent.period}</Period>
+            <Price>R$ {car.rent.price}</Price>
           </Rent>
         </Details>
 
         <Acessories>
-          <Acessory name="380km/h" icon={speedSvg} />
-          <Acessory name="3.2s" icon={accelerationSvg} />
-          <Acessory name="800 HP" icon={forceSvg} />
-          <Acessory name="Gasolina" icon={gasolineSvg} />
-          <Acessory name="Auto" icon={exchangeSvg} />
-          <Acessory name="2 pessoas" icon={peopleSvg} />
+          {car.accessories.map((accesory) => (
+            <Acessory
+              key={accesory.type}
+              name={accesory.name}
+              icon={getAccessoryIcon(accesory.type)}
+            />
+          ))}
         </Acessories>
-        <About>
-          Este é um automóvel sasasiajsias dahsahsasuaushas asasaisjaisja Este é
-          um automóvel sasasiajsisasas dahsahsasuaushas asasaisjaisja Este é um
-          automóvel sasasiajsias dahsahsasuaushas asasaisjaisja Este é um
-          automóvel sadsdsdssasiajsiaas dahsahsasuaushas asasaisjaisja Este é um
-          automóvel asassasasiajsias dahsahsasuaushas asasaisjaisja Este é um
-          automóvel sasasiajsias dahsahsasuaushas asasaisjaisja Este é um
-          automóvel sasasiajsias daasasashsahsasuaushas asasaisjaisja Este é um
-          automóvel sasasiajsias dahsahsasuaushas asasaisjaisja
-        </About>
+        <About>{car.about}</About>
       </Content>
 
       <Footer>
-        <Button title="Confirmar" />
+        <Button
+          title="Escolher período do aluguel"
+          onPress={handleConfirmRental}
+        />
       </Footer>
     </Container>
   );
