@@ -37,7 +37,7 @@ const CarDetails = () => {
   const { car } = params as Params;
 
   function handleConfirmRental() {
-    navigate("Scheduling");
+    navigate("Scheduling", { car });
   }
 
   function handleBack() {

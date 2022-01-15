@@ -9,7 +9,7 @@ import {
 import { ptBR } from "./localeConfig";
 import { DateCallbackHandler } from "react-native-calendars";
 
-import { generateInterval } from "./generateInterfaval";
+import { generateInterval } from "./generateInterval";
 
 LocaleConfig.locales["pt-br"] = ptBR;
 LocaleConfig.defaultLocale = "pt-br";
