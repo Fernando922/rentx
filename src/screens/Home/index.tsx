@@ -41,6 +41,7 @@ const Home = () => {
         const response = await api.get("/cars");
         setCars(response.data);
       } catch (e) {
+        console.log(e);
         console.log("ocorreu um erro");
       } finally {
         setLoading(false);
