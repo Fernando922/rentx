@@ -28,8 +28,8 @@ const Splash = () => {
         {
           translateX: interpolate(
             splashAnimation.value,
-            [0, 50],
-            [0, -50],
+            [0, 50], //referente ao splashAnimation
+            [0, -50], //referente ao translate
             Extrapolate.CLAMP
           ),
         },
@@ -44,8 +44,8 @@ const Splash = () => {
         {
           translateX: interpolate(
             splashAnimation.value,
-            [0, 50],
-            [-50, 0],
+            [0, 50], //referente ao splashAnimation
+            [-50, 0], //referente ao translate
             Extrapolate.CLAMP
           ),
         },
