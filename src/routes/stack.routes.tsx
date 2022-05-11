@@ -16,7 +16,13 @@ export function StackRoutes() {
   return (
     <Navigator screenOptions={{ headerShown: false }} initialRouteName="Splash">
       <Screen name="Splash" component={Splash} />
-      <Screen name="Home" component={Home} />
+      <Screen
+        name="Home"
+        component={Home}
+        options={{
+          gestureEnabled: false, //voltar do ios
+        }}
+      />
       <Screen name="CarDetails" component={CarDetails} />
       <Screen name="Scheduling" component={Scheduling} />
       <Screen name="SchedulingComplete" component={SchedulingComplete} />
