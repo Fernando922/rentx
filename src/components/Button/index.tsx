@@ -12,6 +12,7 @@ interface Props {
   onPress: () => void;
   enabled?: boolean;
   loading?: boolean;
+  light?: boolean;
 }
 
 const Button = ({
@@ -20,6 +21,7 @@ const Button = ({
   onPress,
   enabled = true,
   loading = false,
+  light = false,
 }: Props) => {
   const { colors } = useTheme();
 
@@ -33,7 +35,7 @@ const Button = ({
       {loading ? (
         <ActivityIndicator color={colors.shape} />
       ) : (
-        <Title>{title}</Title>
+        <Title light={light}>{title}</Title>
       )}
     </Container>
   );
