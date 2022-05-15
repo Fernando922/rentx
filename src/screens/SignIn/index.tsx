@@ -5,6 +5,7 @@ import Button from "../../components/Button";
 import theme from "../../styles/theme";
 import Input from "../../components/Input";
 import PasswordInput from "../../components/PasswordInput";
+import { useNavigation } from "@react-navigation/native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 import * as Yup from "yup";
@@ -12,6 +13,8 @@ import * as Yup from "yup";
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigation = useNavigation();
 
   const handleSignIn = async () => {
     try {
@@ -36,6 +39,10 @@ const SignIn = () => {
         );
       }
     }
+  };
+
+  const handleNewAccount = () => {
+    navigation.navigate("FirstStep");
   };
 
   return (
@@ -83,9 +90,7 @@ const SignIn = () => {
             />
             <Button
               title="Criar conta gratuita"
-              onPress={() => {}}
-              enabled={false}
-              loading={false}
+              onPress={handleNewAccount}
               color={theme.colors.background_secondary}
               light
             />
