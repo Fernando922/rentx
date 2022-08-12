@@ -17,9 +17,14 @@ import { Alert, KeyboardAvoidingView } from "react-native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import * as Yup from "yup";
 import { Keyboard } from "react-native";
+import { useAuth } from "../../../hooks/auth";
 
 const FirstStep = () => {
   const { navigate, goBack } = useNavigation();
+
+  const { user } = useAuth();
+
+  console.log(user);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,10 +44,10 @@ const FirstStep = () => {
         name: Yup.string().required("Nome é Obrigatório"),
       });
 
-      const data = { name, email, driverLicense };
-      await schema.validate(data);
+      const user = { name, email, driverLicense };
+      await schema.validate(user);
 
-      navigate("SecondStep", data);
+      navigate("SecondStep", { user });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         Alert.alert("Ops!", error.message);

@@ -18,6 +18,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import { Keyboard } from "react-native";
 import PasswordInput from "../../../components/PasswordInput";
 import { useTheme } from "styled-components";
+import api from "../../../services/api";
 
 interface Params {
   user: { name: string; email: string; driverLicense: string };
@@ -39,7 +40,7 @@ const SecondStep = () => {
     goBack();
   };
 
-  const handleRegister = () => {
+  const handleRegister = async () => {
     if (!password || !passwordConfirm) {
       return Alert.alert("Ops", "Preencha todos os campos");
     }
@@ -47,14 +48,24 @@ const SecondStep = () => {
       return Alert.alert("Ops", "As Senhas não são iguais");
     }
 
-    //enviar pra api e cadastrar
-
-    //chamar a tela de confirmação de cadastro
-    navigate("Confirmation", {
-      nextScreenRoute: "SignIn",
-      title: "Conta criada!",
-      message: `Agora é só fazer login\ne aproveitar`,
-    });
+    api
+      .post("/users", {
+        name: user.name,
+        email: user.email,
+        driver_license: user.driverLicense,
+        password,
+      })
+      .then(() => {
+        navigate("Confirmation", {
+          nextScreenRoute: "SignIn",
+          title: "Conta criada!",
+          message: `Agora é só fazer login\ne aproveitar`,
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+        Alert.alert("Opa!", "Não foi possível cadastrar");
+      });
   };
 
   return (

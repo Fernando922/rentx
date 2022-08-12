@@ -9,6 +9,7 @@ import { useNavigation } from "@react-navigation/native";
 import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 
 import * as Yup from "yup";
+import { useAuth } from "../../hooks/auth";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -16,19 +17,20 @@ const SignIn = () => {
 
   const navigation = useNavigation();
 
+  const { signIn } = useAuth();
+
   const handleSignIn = async () => {
     try {
       const schema = Yup.object().shape({
+        password: Yup.string().required("A senha é obrigatória"),
         email: Yup.string()
           .required("E-mail obrigatório")
           .email("Digite um e-mail válido"),
-        password: Yup.string().required("A senha é obrigatória"),
       });
 
       await schema.validate({ email, password });
-      Alert.alert("Tudo certo!");
 
-      //fazer login
+      signIn({ email, password });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
         Alert.alert("Opa", error.message);
