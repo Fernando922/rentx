@@ -1,12 +1,16 @@
-import React from "react";
-import { Container } from "./styles";
+import React from 'react';
+import { ViewProps } from 'react-native';
 
-interface Props {
+import {
+  BulletView,
+} from './styles';
+
+interface BulletProps extends ViewProps {
   active?: boolean;
 }
 
-const Bullet = ({ active = false }: Props) => {
-  return <Container active={active} />;
-};
-
-export default Bullet;
+export function Bullet({ active = false, ...rest }: BulletProps) {
+  return (
+    <BulletView active={active} {...rest} />
+  );
+}

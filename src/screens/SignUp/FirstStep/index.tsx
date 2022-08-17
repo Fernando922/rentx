@@ -1,101 +1,136 @@
-import React, { useState } from "react";
-import BackButton from "../../../components/BackButton";
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import * as Yup from 'yup';
+
+import { BackButton } from '../../../components/BackButton';
+import { RootStackParamList } from '../../../types/react-navigation/stack.routes';
+
 import {
   Container,
-  Header,
-  Steps,
-  SubTitle,
-  Title,
+  DriverLicenseInput,
+  EmailInput,
   Form,
   FormTitle,
-} from "./styles";
-import { useNavigation } from "@react-navigation/native";
-import Bullet from "../../../components/Bullet";
-import Input from "../../../components/Input";
-import Button from "../../../components/Button";
-import { Alert, KeyboardAvoidingView } from "react-native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
-import * as Yup from "yup";
-import { Keyboard } from "react-native";
-import { useAuth } from "../../../hooks/auth";
+  Header,
+  NameInput,
+  NextStepButton,
+  ScrollableContainer,
+  SignUpFirstStep,
+  SignUpSecondStep,
+  SignUpSteps,
+  SubTitle,
+  Title
+} from './styles';
 
-const FirstStep = () => {
-  const { navigate, goBack } = useNavigation();
+type Props = StackScreenProps<RootStackParamList, 'SignUpFirstStep'>;
 
-  const { user } = useAuth();
+export function FirstStep({ navigation }: Props) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [driverLicense, setDriverLicense] = useState('');
 
-  console.log(user);
+  function handleGoBack() {
+    if (navigation.canGoBack()) {
+      navigation.goBack();
+    }
+  }
 
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [driverLicense, setDriverLicense] = useState("");
-
-  const handleGoBack = () => {
-    goBack();
-  };
-
-  const handleNextStep = async () => {
+  async function handleGoToNextStep() {
     try {
       const schema = Yup.object().shape({
-        driverLicense: Yup.string().required("CNH é obrigatório"),
-        email: Yup.string()
-          .email("E-mail inválido")
-          .required("E-mail é obrigatório"),
-        name: Yup.string().required("Nome é Obrigatório"),
+        name: Yup
+          .string()
+          .required('Nome é obrigatório'),
+        email: Yup
+          .string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        driverLicense: Yup
+          .string()
+          .required('CNH é obrigatória')
       });
 
-      const user = { name, email, driverLicense };
-      await schema.validate(user);
+      const data = { name, email, driverLicense };
+      await schema.validate(data, { abortEarly: false });
 
-      navigate("SecondStep", { user });
+      navigation.navigate('SignUpSecondStep', { user: data });
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        Alert.alert("Ops!", error.message);
+        return Alert.alert('Opa', error.errors.join('\n'));
       }
+
+      return Alert.alert(
+        'Erro na autenticação', 
+        'Ocorreu um erro ao fazer login, verifique as credenciais.'
+      );
     }
-  };
+
+  }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView behavior="position">
-        <Container>
-          <Header>
-            <BackButton onPress={goBack} />
-            <Steps>
-              <Bullet active />
-              <Bullet />
-            </Steps>
-          </Header>
-          <Title>Crie sua{"\n"}conta</Title>
-          <SubTitle>Faça seu cadastro de{"\n"}forma rápida e fácil</SubTitle>
+    <Container>
+      <Header>
+        <BackButton onPress={handleGoBack} />
+        
+        <SignUpSteps>
+          <SignUpFirstStep active />
+          <SignUpSecondStep />
+        </SignUpSteps>
+      </Header>
+
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollableContainer
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <Title>
+            Crie sua{'\n'}
+            conta
+          </Title>
+          <SubTitle>
+            Faça seu cadastro de{'\n'}
+            forma rápida e fácil
+          </SubTitle>
+
           <Form>
             <FormTitle>1. Dados</FormTitle>
-            <Input
+
+            <NameInput
               iconName="user"
               placeholder="Nome"
+              autoCorrect={false}
               value={name}
               onChangeText={setName}
             />
-            <Input
+
+            <EmailInput
               iconName="mail"
               placeholder="E-mail"
               keyboardType="email-address"
+              autoCorrect={false}
+              autoCapitalize="none"
               value={email}
               onChangeText={setEmail}
             />
-            <Input
+
+            <DriverLicenseInput
               iconName="credit-card"
-              onChangeText={setDriverLicense}
               placeholder="CNH"
-              keyboardType="numeric"
               value={driverLicense}
+              onChangeText={setDriverLicense}
+            />
+
+            <NextStepButton
+              title="Próximo"
+              onPress={handleGoToNextStep}
             />
           </Form>
-          <Button title="Próximo" onPress={handleNextStep} />
-        </Container>
+        </ScrollableContainer>
       </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+    </Container>
   );
-};
-
-export default FirstStep;
+}

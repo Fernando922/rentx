@@ -1,50 +1,50 @@
-import React, { useState } from "react";
-import { useTheme } from "styled-components";
-import { Container, IconContainer, InputText } from "./styles";
-import { Feather } from "@expo/vector-icons";
-import { TextInputProps } from "react-native";
+import React, { useState } from 'react';
+import { Feather } from '@expo/vector-icons';
+import { useTheme } from 'styled-components';
+import { StyleProp, TextInputProps, ViewStyle } from 'react-native';
 
-interface Props extends TextInputProps {
+import {
+  Container, 
+  IconContainer, 
+  InputText
+} from './styles';
+
+interface InputProps extends TextInputProps {
   iconName: React.ComponentProps<typeof Feather>["name"];
-  placeholder: string;
-  value?: string;
+  value: string;
+  style?: StyleProp<ViewStyle>;
 }
 
-const Input = ({ iconName, value, ...rest }: Props) => {
+export function Input({ iconName, value, style, ...rest }: InputProps) {
   const [isFocused, setIsFocused] = useState(false);
   const [isFilled, setIsFilled] = useState(false);
-
   const theme = useTheme();
 
-  const handleInputFocus = () => {
+  function handleInputFocus() {
     setIsFocused(true);
-  };
+  }
 
-  const handleInputBlur = () => {
+  function handleInputBlur() {
     setIsFocused(false);
     setIsFilled(!!value);
-  };
+  }
 
   return (
-    <Container>
-      <IconContainer isFocused={isFocused}>
-        <Feather
+    <Container style={style} isFocused={isFocused}>
+      <IconContainer>
+        <Feather 
           name={iconName}
           size={24}
-          color={
-            isFocused || isFilled ? theme.colors.main : theme.colors.text_detail
-          }
+          color={isFocused || isFilled ? theme.colors.main : theme.colors.text_detail}
         />
       </IconContainer>
 
       <InputText
+        placeholderTextColor={theme.colors.text_detail}
         onFocus={handleInputFocus}
         onBlur={handleInputBlur}
-        isFocused={isFocused}
-        {...rest}
+        {...rest} 
       />
     </Container>
   );
-};
-
-export default Input;
+}

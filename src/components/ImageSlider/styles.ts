@@ -1,12 +1,12 @@
-import styled from "styled-components/native";
-import { Dimensions } from "react-native";
+import { Dimensions } from 'react-native';
+import styled, { css } from 'styled-components/native';
+import { Bullet } from '../Bullet';
 
-interface ImageIndexProps {
-  active: boolean;
+interface SliderBulletProps {
+  isFirst: boolean;
 }
 
 export const Container = styled.View`
-  height: 132px;
   width: 100%;
 `;
 
@@ -16,9 +16,16 @@ export const ImageIndexes = styled.View`
   padding-right: 24px;
 `;
 
+export const SliderBullet = styled(Bullet)<SliderBulletProps>`
+  ${({ isFirst }) => !isFirst && css`
+    margin-left: 8px;
+  `};
+`;
+
 export const CarImageWrapper = styled.View`
-  width: ${Dimensions.get("window").width}px;
+  width: ${Dimensions.get('window').width}px;
   height: 132px;
+
   justify-content: center;
   align-items: center;
 `;

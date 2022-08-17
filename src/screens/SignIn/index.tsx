@@ -1,106 +1,119 @@
-import React, { useState } from "react";
-import { Footer, Container, Header, SubTitle, Title, Form } from "./styles";
-import { Alert, Keyboard, KeyboardAvoidingView, StatusBar } from "react-native";
-import Button from "../../components/Button";
-import theme from "../../styles/theme";
-import Input from "../../components/Input";
-import PasswordInput from "../../components/PasswordInput";
-import { useNavigation } from "@react-navigation/native";
-import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+import React, { useState } from 'react';
+import { Alert, Platform, StatusBar } from 'react-native';
+import * as Yup from 'yup';
+import { StackScreenProps } from '@react-navigation/stack';
 
-import * as Yup from "yup";
-import { useAuth } from "../../hooks/auth";
+import { RootStackParamList } from '../../types/react-navigation/stack.routes';
+import {
+  KAV,
+  ScrollableContainer, 
+  Header, 
+  Title, 
+  SubTitle, 
+  Footer, 
+  RegisterButton, 
+  LoginButton, 
+  Form,
+  EmailInput,
+  PasswordInput
+} from './styles';
 
-const SignIn = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+type Props = StackScreenProps<RootStackParamList, 'SignIn'>;
 
-  const navigation = useNavigation();
+export function SignIn({ navigation }: Props) {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const { signIn } = useAuth();
-
-  const handleSignIn = async () => {
+  async function handleSignIn() {
     try {
       const schema = Yup.object().shape({
-        password: Yup.string().required("A senha é obrigatória"),
-        email: Yup.string()
-          .required("E-mail obrigatório")
-          .email("Digite um e-mail válido"),
-      });
+        email: Yup
+          .string()
+          .required('E-mail obrigatório')
+          .email('Digite um e-mail válido'),
+        password: Yup
+          .string()
+          .required('Senha obrigatória')
+      })
+  
+      await schema.validate({ email, password }, { abortEarly: false });
+      Alert.alert('tudo certo');
 
-      await schema.validate({ email, password });
-
-      signIn({ email, password });
+      // Fazer login.
     } catch (error) {
       if (error instanceof Yup.ValidationError) {
-        Alert.alert("Opa", error.message);
-      } else {
-        Alert.alert(
-          "Erro na autenticação",
-          "Ocorreu um erro ao fazer login, verifique as credencias"
-        );
+        return Alert.alert('Opa', error.errors.join('\n'));
       }
-    }
-  };
 
-  const handleNewAccount = () => {
-    navigation.navigate("FirstStep");
-  };
+      return Alert.alert(
+        'Erro na autenticação', 
+        'Ocorreu um erro ao fazer login, verifique as credenciais.'
+      );
+    }
+  }
+
+  function handleRegister() {
+    navigation.navigate('SignUpFirstStep');
+  }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <KeyboardAvoidingView behavior="position" enabled>
-        <Container>
-          <StatusBar
-            barStyle={"dark-content"}
-            backgroundColor="transparent"
-            translucent
+    <KAV 
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollableContainer 
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <StatusBar 
+          barStyle="dark-content"
+          backgroundColor="transparent"
+          translucent
+        />
+
+        <Header>
+          <Title>
+            Estamos{'\n'}
+            quase lá.
+          </Title>
+
+          <SubTitle>
+            Faça seu login para começar{'\n'}
+            uma experiência incrível.
+          </SubTitle>
+        </Header>
+
+        <Form>
+          <EmailInput
+            iconName="mail"
+            placeholder="E-mail"
+            keyboardType="email-address"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={email}
+            onChangeText={setEmail}
           />
-          <Header>
-            <Title>Estamos{"\n"}quase lá.</Title>
-            <SubTitle>
-              Faça seu login para começar{"\n"}uma experiência incrível.
-            </SubTitle>
-          </Header>
 
-          <Form>
-            <Input
-              value={email}
-              iconName="mail"
-              placeholder="E-mail"
-              keyboardType="email-address"
-              autoCorrect={false}
-              autoCapitalize={"none"}
-              onChangeText={setEmail}
-            />
-            <PasswordInput
-              value={password}
-              iconName="lock"
-              placeholder="Senha"
-              autoCorrect={false}
-              autoCapitalize={"none"}
-              onChangeText={setPassword}
-            />
-          </Form>
+          <PasswordInput 
+            placeholder="Senha"
+            autoCorrect={false}
+            autoCapitalize="none"
+            value={password}
+            onChangeText={setPassword}
+          />
+        </Form>
 
-          <Footer>
-            <Button
-              title="Login"
-              onPress={handleSignIn}
-              loading={false}
-              enabled
-            />
-            <Button
-              title="Criar conta gratuita"
-              onPress={handleNewAccount}
-              color={theme.colors.background_secondary}
-              light
-            />
-          </Footer>
-        </Container>
-      </KeyboardAvoidingView>
-    </TouchableWithoutFeedback>
+        <Footer>
+          <LoginButton 
+            title="Login"
+            onPress={handleSignIn}
+          />
+
+          <RegisterButton 
+            title="Criar conta gratuita"
+            onPress={handleRegister}
+          />
+        </Footer>
+      </ScrollableContainer>
+    </KAV>
   );
-};
-
-export default SignIn;
+}

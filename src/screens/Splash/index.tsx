@@ -1,25 +1,19 @@
-import React, { useEffect } from "react";
-import { useNavigation } from "@react-navigation/native";
+import { StackScreenProps } from '@react-navigation/stack';
+import React, { useEffect } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming, interpolate, Extrapolate, runOnJS } from 'react-native-reanimated';
 
-import BrandSvg from "../../assets/brand.svg";
+import BrandSvg from '../../assets/brand.svg';
+import LogoSvg from '../../assets/logo.svg';
+import { RootStackParamList } from '../../types/react-navigation/stack.routes';
 
-import LogoSvg from "../../assets/logo.svg";
+import {
+  Container
+} from './styles';
 
-import { Container } from "./styles";
+type Props = StackScreenProps<RootStackParamList, 'Splash'>;
 
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withTiming,
-  interpolate,
-  Extrapolate,
-  runOnJS,
-} from "react-native-reanimated";
-
-const Splash = () => {
+export function Splash({ navigation }: Props) {
   const splashAnimation = useSharedValue(0);
-
-  const { navigate } = useNavigation();
 
   const brandStyle = useAnimatedStyle(() => {
     return {
@@ -28,13 +22,13 @@ const Splash = () => {
         {
           translateX: interpolate(
             splashAnimation.value,
-            [0, 50], //referente ao splashAnimation
-            [0, -50], //referente ao translate
+            [0, 50],
+            [0, -50],
             Extrapolate.CLAMP
-          ),
-        },
-      ],
-    };
+          )
+        }
+      ]
+    }
   });
 
   const logoStyle = useAnimatedStyle(() => {
@@ -44,37 +38,44 @@ const Splash = () => {
         {
           translateX: interpolate(
             splashAnimation.value,
-            [0, 50], //referente ao splashAnimation
-            [-50, 0], //referente ao translate
+            [0, 50],
+            [-50, 0],
             Extrapolate.CLAMP
-          ),
-        },
-      ],
-    };
+          )
+        }
+      ]
+    }
   });
 
   function startApp() {
-    navigate("SignIn");
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: 'SignIn' }
+      ]
+    });
   }
 
   useEffect(() => {
-    splashAnimation.value = withTiming(50, { duration: 1000 }, () => {
-      "worklet";
-      runOnJS(startApp)(); //pq a animação é executada na thread de interface, em thread separada
-    });
-  }, []);
+    splashAnimation.value = withTiming(
+      50, 
+      { duration: 1000 },
+      () => {
+        'worklet'
+        runOnJS(startApp)();
+      }
+    )
+  }, [])
 
   return (
     <Container>
-      <Animated.View style={[brandStyle, { position: "absolute" }]}>
+      <Animated.View style={[{ position: 'absolute' }, brandStyle]}>
         <BrandSvg width={80} height={50} />
       </Animated.View>
 
-      <Animated.View style={[logoStyle, { position: "absolute" }]}>
+      <Animated.View style={[{ position: 'absolute' }, logoStyle]}>
         <LogoSvg width={180} height={20} />
       </Animated.View>
     </Container>
   );
-};
-
-export default Splash;
+}

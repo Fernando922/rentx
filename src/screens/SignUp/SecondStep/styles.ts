@@ -1,53 +1,78 @@
-import { getStatusBarHeight } from "react-native-iphone-x-helper";
-import { RFValue } from "react-native-responsive-fontsize";
-import styled from "styled-components/native";
-import theme from "../../../styles/theme";
+import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { RFValue } from 'react-native-responsive-fontsize';
+import styled from 'styled-components/native';
+import { Bullet } from '../../../components/Bullet';
+import { Button } from '../../../components/Button';
+import { ProtectedInput } from '../../../components/ProtectedInput';
 
 export const Container = styled.View`
-  padding: 0 24px;
+  flex: 1;
+  padding: ${getStatusBarHeight(true) + 31}px 24px 16px;
+
   background-color: ${({ theme }) => theme.colors.background_primary};
 `;
 
-export const Header = styled.View`
-  flex-direction: row;
-  width: 100%;
-  justify-content: space-between;
+export const ScrollableContainer = styled.ScrollView.attrs({
+  contentContainerStyle: {
+    paddingBottom: 20
+  }
+})``;
 
+export const Header = styled.View`
+  width: 100%;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
 
-  margin-top: ${getStatusBarHeight() + 31}px;
+  padding-bottom: 6px;
 `;
 
-export const Steps = styled.View`
+export const SignUpSteps = styled.View`
   flex-direction: row;
   align-items: center;
+`;
+
+export const SignUpFirstStep = styled(Bullet)``;
+
+export const SignUpSecondStep = styled(Bullet)`
+  margin-left: 8px;
 `;
 
 export const Title = styled.Text`
   font-size: ${RFValue(40)}px;
   font-family: ${({ theme }) => theme.fonts.secondary_600};
   color: ${({ theme }) => theme.colors.title};
-  margin-top: 40px;
-  margin-bottom: 16px;
+
+  margin-top: 60px;
 `;
 
 export const SubTitle = styled.Text`
   font-size: ${RFValue(15)}px;
   font-family: ${({ theme }) => theme.fonts.primary_400};
-  color: ${({ theme }) => theme.colors.text_detail};
+  color: ${({ theme }) => theme.colors.text};
   line-height: ${RFValue(25)}px;
-  margin-bottom: 16px;
+  margin-top: 16px;
 `;
 
 export const Form = styled.View`
   width: 100%;
-  margin-top: 40px;
-  margin-bottom: 16px;
+  margin-top: 64px;
 `;
 
 export const FormTitle = styled.Text`
   font-size: ${RFValue(20)}px;
-  margin-bottom: 24px;
   font-family: ${({ theme }) => theme.fonts.secondary_600};
   color: ${({ theme }) => theme.colors.title};
+`;
+
+export const NewPasswordInput  = styled(ProtectedInput)`
+  margin-top: 24px;
+`;
+
+export const ConfirmNewPasswordInput  = styled(ProtectedInput)`
+  margin-top: 8px;
+`;
+
+export const FinishRegisterButton = styled(Button)`
+  margin-top: 16px;
 `;

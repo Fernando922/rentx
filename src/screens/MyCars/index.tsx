@@ -1,12 +1,14 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { FlatList, StatusBar } from "react-native";
-import { useTheme } from "styled-components";
-import BackButton from "../../components/BackButton";
-import Car from "../../components/Car";
-import { CarDTO } from "../../dtos/CarDTO";
-import api from "../../services/api";
-import { AntDesign } from "@expo/vector-icons";
+import React, { useEffect, useState } from 'react';
+import { StatusBar, FlatList } from 'react-native';
+import { useTheme } from 'styled-components';
+import { AntDesign } from '@expo/vector-icons';
+
+import { CarDTO } from '../../dtos/CarDTO';
+import { api } from '../../services/api';
+
+import { BackButton } from '../../components/BackButton';
+import { Car } from '../../components/Car';
+import { LoadAnimation } from '../../components/LoadAnimation';
 
 import {
   Container,
@@ -22,34 +24,36 @@ import {
   CarFooterTitle,
   CarFooterPeriod,
   CarFooterDate,
-} from "./styles";
-import Load from "../../components/Load";
+} from './styles';
+import { StackScreenProps } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types/react-navigation/stack.routes';
+
 
 interface CarProps {
-  id: string;
-  user_id: string;
+  id: number;
+  user_id: number;
   car: CarDTO;
   startDate: string;
   endDate: string;
 }
 
-const MyCars = () => {
-  const { goBack } = useNavigation();
+type Props = StackScreenProps<RootStackParamList, 'MyCars'>;
 
-  const { colors } = useTheme();
-
-  const [cars, setCars] = useState<CarProps[]>([]);
+export function MyCars({ navigation }: Props) {
+  const [cars, setCars] = useState<CarProps[]>([])
   const [loading, setLoading] = useState(true);
 
-  function handleBack() {
-    goBack();
+  const theme = useTheme();
+
+  function handleGoBack() {
+    if (navigation.canGoBack())
+      navigation.goBack()
   }
 
   useEffect(() => {
     async function fetchCars() {
       try {
-        const response = await api.get("/schedules_byuser?user_id=1");
-
+        const response = await api.get('schedules_byuser?user_id=1');
         setCars(response.data);
       } catch (error) {
         console.log(error);
@@ -59,37 +63,47 @@ const MyCars = () => {
     }
 
     fetchCars();
-  }, []);
+  }, [])
 
   return (
     <Container>
       <Header>
-        <StatusBar
+        <StatusBar 
           barStyle="light-content"
           translucent
           backgroundColor="transparent"
         />
-        <BackButton onPress={handleBack} color={colors.shape} />
-        <Title>Seus agendamentos{"\n"}estão aqui.</Title>
-        <SubTitle>Conforto, segurança e praticidade</SubTitle>
-      </Header>
+        <BackButton 
+          color={theme.colors.shape}
+          onPress={handleGoBack} 
+        />
 
-      {loading ? (
-        <Load />
-      ) : (
+        <Title>
+          Escolha uma{'\n'}
+          data de início e{'\n'}
+          fim do aluguel
+        </Title>
+
+        <SubTitle>
+          Conforto, segurança e praticidade.
+        </SubTitle>
+      </Header>
+    
+      { loading ? <LoadAnimation /> : (
         <Content>
           <Appointments>
             <AppointmentsTitle>Agendamentos feitos</AppointmentsTitle>
             <AppointmentsQuantity>{cars.length}</AppointmentsQuantity>
           </Appointments>
 
-          <FlatList
+          <FlatList 
             data={cars}
+            keyExtractor={item => String(item.id)}
             showsVerticalScrollIndicator={false}
-            keyExtractor={(item) => String(item.id)}
             renderItem={({ item }) => (
               <CarWrapper>
                 <Car data={item.car} />
+                
                 <CarFooter>
                   <CarFooterTitle>Período</CarFooterTitle>
                   <CarFooterPeriod>
@@ -97,7 +111,7 @@ const MyCars = () => {
                     <AntDesign
                       name="arrowright"
                       size={20}
-                      color={colors.title}
+                      color={theme.colors.title}
                       style={{ marginHorizontal: 10 }}
                     />
                     <CarFooterDate>{item.endDate}</CarFooterDate>
@@ -110,6 +124,4 @@ const MyCars = () => {
       )}
     </Container>
   );
-};
-
-export default MyCars;
+}

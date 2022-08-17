@@ -1,14 +1,20 @@
-import React, { useRef, useState } from "react";
-import { FlatList, ViewToken } from "react-native";
-import Bullet from "../Bullet";
+import React from 'react';
+import { useState } from 'react';
+import { useRef } from 'react';
+import { FlatList, ViewToken } from 'react-native';
 
-import { Container, ImageIndexes, CarImageWrapper, CarImage } from "./styles";
+import { Bullet } from '../Bullet';
+
+import {
+  Container,
+  ImageIndexes,
+  CarImageWrapper,
+  CarImage,
+  SliderBullet
+} from './styles';
 
 interface Props {
-  imagesUrl: {
-    id: string;
-    photo: string;
-  }[];
+  imagesUrl: string[];
 }
 
 interface ChangeImageProps {
@@ -16,36 +22,42 @@ interface ChangeImageProps {
   changed: ViewToken[];
 }
 
-const ImageSlider = ({ imagesUrl }: Props) => {
+export function ImageSlider({ imagesUrl }: Props) {
   const [imageIndex, setImageIndex] = useState(0);
 
   const indexChanged = useRef((info: ChangeImageProps) => {
-    const index = info.viewableItems[0].index!;
+    const index = info.viewableItems[0].index ?? 0;
     setImageIndex(index);
-  });
+  })
 
   return (
     <Container>
       <ImageIndexes>
-        {imagesUrl.map((item, index) => (
-          <Bullet key={item.id} active={index === imageIndex} />
+        {imagesUrl.map((_, index) => (
+          <SliderBullet
+            key={index}
+            isFirst={index === 0}
+            active={index === imageIndex}
+          />
         ))}
       </ImageIndexes>
-
-      <FlatList
+      
+      <FlatList 
         data={imagesUrl}
-        keyExtractor={(item) => item.id}
+        keyExtractor={key => key}
         renderItem={({ item }) => (
           <CarImageWrapper>
-            <CarImage source={{ uri: item.photo }} resizeMode="contain" />
+            <CarImage 
+              source={{ uri: item }}
+              resizeMode="contain"
+            />
           </CarImageWrapper>
         )}
         horizontal
         showsHorizontalScrollIndicator={false}
+        pagingEnabled
         onViewableItemsChanged={indexChanged.current}
       />
     </Container>
   );
-};
-
-export default ImageSlider;
+}
